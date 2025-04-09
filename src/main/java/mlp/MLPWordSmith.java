@@ -10,25 +10,30 @@ import java.util.logging.Logger;
 
 public class MLPWordSmith {
     private static final Logger LOGGER = Logger.getLogger(MLPWordSmith.class.getName());
-    private static MLPWordSmith instance;
+    private static final String DEFAULT_LANGUAGE = "English";
     private final Map<String, Map<String, String>> translations = new HashMap<>();
-    private final List<String> availableLanguages = new ArrayList<>();
-    private String currentLanguage = "English";
+    private final Set<String> availableLanguages = new HashSet<>();
+    private String currentLanguage = DEFAULT_LANGUAGE;
     private String path = "Example/src/main/resources/translation.csv"; // Default path
 
     private MLPWordSmith() {
         loadTranslations();
     }
 
+    private static final class InstanceHolder {
+        private static final MLPWordSmith instance = new MLPWordSmith();
+    }
+
     public static MLPWordSmith getInstance() {
-        if (instance == null) {
-            instance = new MLPWordSmith();
-        }
-        return instance;
+        return InstanceHolder.instance;
     }
 
     public void setFilePath(String filePath) {
         this.path = filePath;
+        reloadTranslations();
+    }
+
+    private void reloadTranslations() {
         translations.clear();
         availableLanguages.clear();
         loadTranslations();
@@ -58,12 +63,12 @@ public class MLPWordSmith {
                 }
             }
         } catch (IOException e) {
-            LOGGER.log(Level.INFO, "Failed to load translations from: " + path);
+            LOGGER.log(Level.SEVERE, "Failed to load translations from: " + path, e);
         }
     }
 
     public String translate(String text) {
-        if (currentLanguage.equals("English")) {
+        if (DEFAULT_LANGUAGE.equals(currentLanguage)) {
             return text;
         }
 
@@ -81,8 +86,8 @@ public class MLPWordSmith {
         return translation;
     }
 
-    public List<String> getAvailableLanguages() {
-        return availableLanguages;
+    public Set<String> getAvailableLanguages() {
+        return Collections.unmodifiableSet(availableLanguages);
     }
 
     public void setCurrentLanguage(String language) {
