@@ -5,8 +5,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MLPWordSmith {
+    private static final Logger LOGGER = Logger.getLogger(MLPWordSmith.class.getName());
     private static MLPWordSmith instance;
     private final Map<String, Map<String, String>> translations = new HashMap<>();
     private final List<String> availableLanguages = new ArrayList<>();
@@ -55,8 +58,7 @@ public class MLPWordSmith {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Failed to load translations from: " + path);
-            e.printStackTrace();
+            LOGGER.log(Level.INFO, "Failed to load translations from: " + path);
         }
     }
 
@@ -65,11 +67,18 @@ public class MLPWordSmith {
             return text;
         }
 
-        Map<String, String> languageTranslations = translations.get(currentLanguage);
-        if (languageTranslations != null && languageTranslations.containsKey(text)) {
-            return languageTranslations.get(text);
+        Map<String, String> langTranslations = translations.get(currentLanguage);
+        if (langTranslations == null) {
+            LOGGER.log(Level.WARNING, "No translations found for language: " + currentLanguage);
+            return text;
         }
-        return text;
+
+        String translation = langTranslations.get(text);
+        if (translation == null || translation.isEmpty()) {
+            LOGGER.log(Level.INFO, "Missing translation for key: " + text);
+            return text;
+        }
+        return translation;
     }
 
     public List<String> getAvailableLanguages() {
@@ -79,6 +88,8 @@ public class MLPWordSmith {
     public void setCurrentLanguage(String language) {
         if (availableLanguages.contains(language)) {
             this.currentLanguage = language;
+        } else {
+            LOGGER.log(Level.WARNING, "Language not available: " + language);
         }
     }
 
