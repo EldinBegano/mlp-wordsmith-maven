@@ -1,0 +1,78 @@
+= MLPWordSmith
+:toc: left
+:icons: font
+
+== Description
+
+MLPWordSmith is a lightweight Java utility for handling multilingual text translations based on a CSV file. It provides a singleton class that reads translation strings from a UTF-8 encoded CSV and allows switching between supported languages at runtime.
+
+== Features
+
+- Loads translations from a CSV file
+- Supports multiple languages
+- Singleton design pattern
+
+== CSV Format
+
+* The first row contains the supported language names:
+[source, csv]
+----
+English,German,Italian
+----
+
+* Each subsequent row includes translation keys and their corresponding translations:
+[source, csv]
+----
+Strawberry, Erdbeere, Fragola
+----
+
+== How to Use
+
+=== Get Singleton Instance
+
+[source,java]
+----
+MLPWordSmith translator = MLPWordSmith.getInstance();
+----
+
+=== Set Current Language
+
+[source, java]
+----
+translator.setCurrentLanguage("German");
+----
+
+=== Translate Text
+
+[source, java]
+----
+String translated = translator.translate("Strawberry");
+System.out.println(translated); // Outputs: Erdbeere
+----
+
+=== Get Available Languages
+
+[source, java]
+----
+List<String> languages = translator.getAvailableLanguages();
+languages.forEach(System.out::println);
+----
+
+=== Check Current Language
+
+[source, java]
+----
+String lang = translator.getCurrentLanguage();
+System.out.println("Current language: " + lang);
+----
+
+== Tester
+
+* Open https://github.com/EldinBegano/mlp-wordsmith and clone the project
+
+* Load the pom.xml as a Maven Project
+
+* Run the AppLauncher and write Hello
+
+* Press translate and see the result
+
