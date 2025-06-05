@@ -98,7 +98,25 @@ public class MLPWordSmith {
         }
     }
 
+    public boolean hasTranslation(String text) {
+        if (text == null || DEFAULT_LANGUAGE.equals(currentLanguage)) {
+            return true;
+        }
+
+        Map<String, String> langTranslations = translations.get(currentLanguage);
+        if (langTranslations == null) {
+            return false;
+        }
+
+        String translation = langTranslations.get(text);
+        return translation != null && !translation.isEmpty();
+    }
+
     public String getCurrentLanguage() {
         return currentLanguage;
+    }
+
+    public String getFilePath() {
+        return path;
     }
 }
